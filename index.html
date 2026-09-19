@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>genZbite — Your Chef, Your Choice</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#f7f8f7;color:#101817;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+button{font:inherit;cursor:pointer}
+button:disabled{cursor:not-allowed}
+.hide{display:none!important}
+.page{min-height:100vh}
+
+/* TOPBAR / HEADER */
+.topbar{height:88px;background:#fff;border-bottom:1px solid #ecefed;display:flex;align-items:center;padding:0 4.5%;gap:30px;position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px;min-width:280px}
+.brand-logo-circle{width:48px;height:48px;border-radius:50%;background:#050505;display:grid;place-items:center}
+.brandtext{font-weight:900;font-size:24px;letter-spacing:-1.2px}
+.brandtext b{color:#08745d}
+.tagline{display:block;font-size:10px;font-weight:500;color:#66716e;letter-spacing:.15px;margin-top:2px}
+.navlinks{display:flex;align-items:center;justify-content:center;gap:29px;flex:1}
+.navlinks button{border:0;background:transparent;color:#18201e;font-size:14px;font-weight:650;padding:12px 0;position:relative}
+.navlinks button.active:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:5px;background:#08745d}
+.navright{display:flex;align-items:center;gap:12px}
+.location{display:flex;align-items:center;gap:8px;color:#596562;font-size:12px;line-height:1.25}
+.location strong{display:block;color:#52605c;font-weight:600}
+.pinicon{font-size:20px;color:#08745d}
+.auth{border:0;border-radius:24px;background:#075f4e;color:#fff;padding:12px 22px;font-size:13px;font-weight:800}
+
+/* HOME & CHEFS */
+.home-main{padding:0 4.5% 70px}
+.nearby-head{display:flex;align-items:flex-end;justify-content:space-between;padding-top:34px;margin-bottom:27px}
+.eyebrow{display:flex;gap:12px;align-items:center;color:#51605d;font-size:14px;margin-bottom:13px}
+.eyebrow .dot{width:4px;height:4px;border-radius:50%;background:#08745d}
+.nearby-title{margin:0;font-size:38px;line-height:1;letter-spacing:-1.8px}
+.nearby-sub{margin:10px 0 0;color:#687470;font-size:15px;line-height:1.6;max-width:650px}
+.filters{display:flex;gap:13px;align-items:center}
+.filter{border:1px solid #e1e5e3;background:#fff;color:#26312e;border-radius:25px;padding:12px 21px;font-size:13px;font-weight:700;box-shadow:0 4px 15px #0b2b2110}
+.filter.active{background:#075f4e;color:#fff;border-color:#075f4e}
+.chefgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px 27px}
+.chefcard{background:#fff;border-radius:13px;overflow:hidden;border:1px solid #e8ebe9;box-shadow:0 10px 26px #18332a0b}
+.chefphoto{height:180px;position:relative;background:#ddd;overflow:hidden}
+.chefphoto img{width:100%;height:100%;object-fit:cover}
+.status{position:absolute;top:13px;left:13px;border-radius:18px;padding:6px 12px;color:#fff;background:#079260;font-size:11px;font-weight:800}
+.photo-meta{position:absolute;right:12px;bottom:10px;color:#fff;text-align:right;font-size:12px;font-weight:800;text-shadow:0 1px 4px #000}
+.chefbody{padding:15px}
+.chefname{font-size:17px;font-weight:850;letter-spacing:-.3px}
+.rating{margin-top:5px;font-size:12px;color:#69736f}
+.star{color:#f3b500;font-size:15px}
+.cuisine{margin-top:10px;color:#53605d;font-size:12px}
+.bookbtn{width:100%;margin-top:13px;border:0;border-radius:8px;background:#075f4e;color:#fff;padding:11px 12px;font-size:13px;font-weight:800}
+
+/* FLOW CONTAINER & CARDS */
+.flow{width:min(930px,91%);margin:auto;padding:45px 0 80px}
+.back{border:0;background:transparent;color:#5d6865;font-weight:800;margin-bottom:25px;padding:0}
+.flow h1{font-size:clamp(32px,5vw,48px);line-height:1.1;letter-spacing:-2px;margin:0 0 10px}
+.flowlead{color:#697572;margin:0 0 25px}
+.menu-tabs{display:flex;gap:12px;margin:20px 0 25px}
+.choicegrid,.ingredientgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.selectcard{background:#fff;border:1px solid #dfe5e2;border-radius:18px;padding:22px;text-align:left;transition:.18s;cursor:pointer}
+.selectcard:hover{border-color:#08745d;transform:translateY(-2px)}
+.selectcard.selected{border:2px solid #08745d;background:#f1faf7}
+.choicecard strong{font-size:18px;display:block;margin-bottom:6px}
+.choicecard span{color:#6b7673;font-size:13px;line-height:1.5}
+
+/* MENU LIST WITH BUTTER OPTION */
+.menu-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.meal{background:#fff;border:1px solid #e0e5e2;border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.meal-name{font-weight:850;font-size:16px}
+.opt-toggle{display:flex;gap:6px;margin-top:8px}
+.opt-btn{border:1px solid #c8d1ce;background:#fff;padding:5px 11px;border-radius:8px;font-size:11px;font-weight:700}
+.opt-btn.active{background:#075f4e;color:#fff;border-color:#075f4e}
+.smallbtn{border:0;border-radius:10px;background:#075f4e;color:#fff;padding:10px 14px;font-size:12px;font-weight:800}
+
+/* SUMMARY PAGE */
+.summarygrid{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;margin-top:25px}
+@media(max-width:768px){.summarygrid{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid #e0e5e2;border-radius:20px;padding:22px}
+.chefmini{display:flex;align-items:center;gap:14px}
+.chefmini img{width:70px;height:70px;border-radius:14px;object-fit:cover}
+.mini-name{font-weight:900;font-size:18px}
+.line{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #edf0ef;font-size:14px}
+.total-label{font-size:11px;color:#68736f;font-weight:800;letter-spacing:.6px}
+.total{font-size:36px;font-weight:950;letter-spacing:-1.5px;margin:4px 0 10px}
+.confirmbtn{width:100%;border:0;border-radius:12px;background:#075f4e;color:#fff;padding:14px;font-size:15px;font-weight:850;margin-top:15px}
+
+/* TRACKING MAP PAGE */
+.trackcard{background:#fff;border:1px solid #e1e6e3;border-radius:24px;overflow:hidden;margin-top:20px}
+.tracktop{padding:20px;display:flex;justify-content:space-between;align-items:center;background:#fdfdfd;border-bottom:1px solid #eee}
+.map{height:350px;position:relative;background:#e7ebe8;background-image:linear-gradient(25deg,transparent 47%,#fff 48%,#fff 50%,transparent 51%),linear-gradient(115deg,transparent 47%,#fff 48%,#fff 50%,transparent 51%);background-size:180px 130px}
+.route{position:absolute;left:20%;top:50%;width:55%;height:5px;background:#08745d;transform:rotate(-15deg);border-radius:5px}
+.mapdot{position:absolute;width:22px;height:22px;border-radius:50%;border:4px solid #fff;box-shadow:0 2px 8px #0004}
+.chefpin{left:72%;top:35%;background:#075f4e}
+.homepin{left:20%;top:50%;background:#111}
+
+/* INTRO SPLASH SCREEN & CURSIVE DRAW ANIMATION */
+#intro{position:fixed;inset:0;background:#050505;color:#fff;z-index:999;display:grid;place-items:center;text-align:center;overflow:hidden}
+.introbox{position:relative;width:320px;height:320px}
+.namaste{font-size:54px;font-weight:800;position:absolute;left:0;right:0;top:30px;animation:fadeOut .5s 1.2s forwards}
+.pop-elem{position:absolute;left:50%;top:115px;transform:translateX(-50%);animation:popOut .5s 2.1s forwards}
+.z-loader-wrap{position:absolute;left:50%;top:90px;transform:translateX(-50%);width:140px;height:140px;opacity:0;animation:fadeIn .4s 2.6s forwards}
+#cursiveZ{width:100%;height:100%}
+.z-stroke{fill:none;stroke:#08745d;stroke-width:14;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1000;stroke-dashoffset:1000;animation:drawZ 2.2s 2.7s ease-in-out forwards}
+
+@keyframes drawZ {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fadeOut{to{opacity:0;transform:scale(.95)}}
+@keyframes popOut{0%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(0.2)}}
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN ANIMATION -->
+<div id="intro">
+  <div class="introbox">
+    <div class="namaste">नमस्ते</div>
+    <div class="pop-elem">
+      <span style="font-size:32px;">🍳 🔪 ☕</span>
+    </div>
+    <div class="z-loader-wrap">
+      <svg id="cursiveZ" viewBox="0 0 371 269">
+        <path class="z-stroke" d="M8 102 C55 62 112 18 167 20 C186 21 183 43 163 63 C137 89 101 111 57 137"/>
+        <path class="z-stroke" d="M55 174 C88 151 123 127 155 116 C177 109 192 116 190 132 C187 151 163 174 139 193 C111 216 75 238 51 231 C38 227 43 207 55 190"/>
+        <path class="z-stroke" d="M92 162 C142 130 196 111 251 91 C292 76 330 61 369 52"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER NAVBAR -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo-circle">
+      <svg viewBox="0 0 371 269" style="width:26px;height:26px;">
+        <path fill="none" stroke="#08745d" stroke-width="18" stroke-linecap="round" d="M8 102 C55 62 112 18 167 20 C186 21 183 43 163 63 C137 89 101 111 57 137 M55 174 C88 151 123 127 155 116 C177 109 192 116 190 132 C187 151 163 174 139 193 M92 162 C142 130 196 111 251 91 C292 76 330 61 369 52"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brandtext">gen<b>Z</b>bite</div>
+      <span class="tagline">Your Chef, Your Choice</span>
+    </div>
+  </div>
+  <nav class="navlinks">
+    <button class="active" onclick="showPage('homePage')">Home</button>
+  </nav>
+  <div class="navright">
+    <div class="location">
+      <span class="pinicon">📍</span>
+      <div>
+        <strong>Connaught Place</strong>
+        <span>New Delhi</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HOME PAGE -->
+<main id="homePage" class="page home-main">
+  <div class="nearby-head">
+    <div>
+      <div class="eyebrow"><span class="dot"></span> Available Near You</div>
+      <h1 class="nearby-title">Book Top Home Chefs</h1>
+      <p class="nearby-sub">Choose professional chefs for home-cooked meals tailored to your taste.</p>
+    </div>
+  </div>
+
+  <div class="chefgrid">
+    <div class="chefcard">
+      <div class="chefphoto">
+        <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=500&auto=format&fit=crop" alt="Chef Vikas">
+        <span class="status">Available</span>
+      </div>
+      <div class="chefbody">
+        <div class="chefname">Chef Vikas Sharma</div>
+        <div class="rating"><span class="star">★</span> 4.9 (128 reviews)</div>
+        <div class="cuisine">North Indian, Mughlai Special</div>
+        <button class="bookbtn" onclick="showPage('bookChefPage')">Book Chef</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- BOOK CHEF PAGE (I Tell Chef / Menu Tab) -->
+<section id="bookChefPage" class="page hide flow">
+  <button class="back" onclick="showPage('homePage')">← Back to Home</button>
+  <h1>How would you like to order?</h1>
+  <p class="flowlead">Choose either direct custom instructions or select dishes from menu.</p>
+  
+  <div class="menu-tabs">
+    <button class="filter active" onclick="switchBookingTab('tellChef')">I Tell The Chef</button>
+    <button class="filter" onclick="switchBookingTab('menu')">Menu Options</button>
+  </div>
+
+  <!-- TAB 1: I TELL THE CHEF -->
+  <div id="tellChefTab">
+    <div class="choicegrid">
+      <div class="selectcard choicecard" onclick="goToIngredients(499, 'Custom Instruction Meal')">
+        <strong>Custom Dish Request</strong>
+        <span>Directly tell your chef what you want to prepare step-by-step at home.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: MENU WITH BUTTER / NO BUTTER TOGGLE -->
+  <div id="menuTab" class="hide">
+    <div class="menu-list">
+      <div class="meal">
+        <div>
+          <div class="meal-name">Paneer Butter Masala</div>
+          <div class="opt-toggle">
+            <button class="opt-btn active" onclick="toggleOption(this)">With Butter</button>
+            <button class="opt-btn" onclick="toggleOption(this)">No Butter</button>
+          </div>
+        </div>
+        <button class="smallbtn" onclick="goToIngredients(499, 'Paneer Butter Masala')">Select & Next</button>
+      </div>
+      <div class="meal">
+        <div>
+          <div class="meal-name">Dal Makhani</div>
+          <div class="opt-toggle">
+            <button class="opt-btn active" onclick="toggleOption(this)">With Butter</button>
+            <button class="opt-btn" onclick="toggleOption(this)">No Butter</button>
+          </div>
+        </div>
+        <button class="smallbtn" onclick="goToIngredients(399, 'Dal Makhani')">Select & Next</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INGREDIENTS CHOICE PAGE -->
+<section id="ingredientsPage" class="page hide flow">
+  <button class="back" onclick="showPage('bookChefPage')">← Back to Menu</button>
+  <h1>Select Ingredients Option</h1>
+  <p class="flowlead">Choose who will provide the ingredients for preparation.</p>
+
+  <div class="ingredientgrid">
+    <div class="selectcard" onclick="setIngredientChoice('my', 0)">
+      <h2 style="margin:0 0 8px;">My Ingredients</h2>
+      <p style="color:#697572;font-size:13px;line-height:1.5;">You provide all groceries and ingredients. Chef charges only cooking fees.</p>
+      <strong style="color:#08745d;">+ ₹0 Extra Charge</strong>
+    </div>
+
+    <div class="selectcard" onclick="setIngredientChoice('chef', 250)">
+      <h2 style="margin:0 0 8px;">Chef Ingredients</h2>
+      <p style="color:#697572;font-size:13px;line-height:1.5;">Chef brings fresh ingredients, veggies & spices needed for your meal.</p>
+      <strong style="color:#08745d;">+ ₹250 Extra Cost</strong>
+    </div>
+  </div>
+</section>
+
+<!-- SUMMARY & PAYMENT PAGE -->
+<section id="summaryPage" class="page hide flow">
+  <button class="back" onclick="showPage('ingredientsPage')">← Back</button>
+  <h1>Booking Summary</h1>
+
+  <div class="summarygrid">
+    <div class="panel">
+      <div class="chefmini">
+        <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=500&auto=format&fit=crop" alt="Chef">
+        <div>
+          <div class="mini-name">Chef Vikas Sharma</div>
+          <span style="font-size:12px;color:#666;" id="selectedDishTxt">Selected: Custom Meal</span>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <div class="line"><span>Chef Cooking Charge</span><strong id="chefChargeTxt">₹499</strong></div>
+        <div class="line"><span>Ingredients Charge</span><strong id="ingChargeTxt">₹0</strong></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="total-label">TOTAL AMOUNT TO PAY</div>
+      <div class="total" id="totalPriceTxt">₹499</div>
+      <button class="confirmbtn" onclick="showPage('trackingPage')">Confirm & Proceed</button>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE TRACKING PAGE -->
+<section id="trackingPage" class="page hide flow">
+  <h1>Order Confirmed!</h1>
+  <p class="flowlead">Your chef is on the way to your location.</p>
+
+  <div class="trackcard">
+    <div class="tracktop">
+      <div>
+        <div style="font-size:12px;color:#666;">ESTIMATED ARRIVAL TIME</div>
+        <div style="font-size:24px;font-weight:900;color:#075f4e;">25 Minutes</div>
+      </div>
+      <button class="auth" onclick="showPage('homePage')">Done</button>
+    </div>
+    <div class="map">
+      <div class="route"></div>
+      <div class="mapdot chefpin"></div>
+      <div class="mapdot homepin"></div>
+    </div>
+  </div>
+</section>
+
+<!-- JAVASCRIPT LOGIC -->
+<script>
+  let basePrice = 499;
+  let ingredientPrice = 0;
+  let selectedDish = "";
+
+  // Hide Intro Loader Overlay after Animation finishes
+  setTimeout(() => {
+    const intro = document.getElementById('intro');
+    if(intro) intro.style.display = 'none';
+  }, 5200);
+
+  // Switch between Pages
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hide'));
+    document.getElementById(id).classList.remove('hide');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Switch Tabs in Booking
+  function switchBookingTab(tab) {
+    const tabs = document.querySelectorAll('.menu-tabs .filter');
+    tabs[0].classList.toggle('active', tab === 'tellChef');
+    tabs[1].classList.toggle('active', tab === 'menu');
+    
+    document.getElementById('tellChefTab').classList.toggle('hide', tab !== 'tellChef');
+    document.getElementById('menuTab').classList.toggle('hide', tab !== 'menu');
+  }
+
+  // Toggle Butter / No Butter
+  function toggleOption(btn) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Proceed to Ingredients Choice
+  function goToIngredients(price, dishName) {
+    basePrice = price;
+    selectedDish = dishName;
+    showPage('ingredientsPage');
+  }
+
+  // Set Ingredient Choice and calculate Summary Total Price
+  function setIngredientChoice(type, extraCost) {
+    ingredientPrice = extraCost;
+    
+    document.getElementById('selectedDishTxt').innerText = 'Selected: ' + selectedDish;
+    document.getElementById('chefChargeTxt').innerText = '₹' + basePrice;
+    document.getElementById('ingChargeTxt').innerText = '₹' + ingredientPrice;
+    document.getElementById('totalPriceTxt').innerText = '₹' + (basePrice + ingredientPrice);
+
+    showPage('summaryPage');
+  }
+</script>
+
+</body>
+</html>
